@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Karabo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;400;600&family=Playfair+Display:italic,wght@700&display=swap');
+
+        :root {
+            --primary-pink: #ffafcc;
+            --accent-pink: #fb6f92;
+            --deep-rose: #c9184a;
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            color: #444;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- MUSIC PROMPT --- */
+        .music-hint {
+            font-family: 'Dancing Script', cursive;
+            color: var(--accent-pink);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- ENVELOPE SECTION --- */
+        #splash {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #fff5f7, #ffccd5);
+            transition: opacity 0.8s ease;
+        }
+
+        .click-instruction {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--deep-rose);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .envelope-wrapper:hover { transform: scale(1.05) rotate(2deg); }
+
+        .envelope-main {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #f8adbc;
+            border-radius: 8px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .heart-seal {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background: #ff4d6d;
+            transform: rotate(45deg);
+            box-shadow: 0 5px 15px rgba(201, 24, 74, 0.4);
+            z-index: 10;
+            animation: breathe 2s infinite;
+        }
+        .heart-seal::before, .heart-seal::after {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #ff4d6d;
+            border-radius: 50%;
+        }
+        .heart-seal::before { left: -25px; }
+        .heart-seal::after { top: -25px; }
+
+        @keyframes breathe { 0%, 100% { transform: scale(1) rotate(45deg); } 50% { transform: scale(1.1) rotate(45deg); } }
+
+        /* --- MINI GAME SECTION --- */
+        #game-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 1s ease;
+        }
+        .game-title { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--deep-rose); margin-bottom: 20px; }
+        .heart-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; max-width: 400px; margin: 0 auto; }
+        .game-heart { 
+            font-size: 3rem; cursor: pointer; transition: transform 0.3s; 
+            filter: grayscale(100%);
+        }
+        .game-heart.active { filter: grayscale(0%); transform: scale(1.2); }
+
+        /* --- POLAROIDS --- */
+        .photo-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px auto;
+            max-width: 400px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 15px 15px 25px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: rotate(var(--r));
+            transition: 0.3s;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #eee;
+        }
+
+        .polaroid-caption {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: #444;
+            margin-top: 15px;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        /* --- CONTENT SECTION --- */
+        #content {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        #main-letter { display: none; } /* Hidden until game won */
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            padding: 60px 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: var(--deep-rose);
+            margin-bottom: 30px;
+        }
+
+        .poem-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #4a4a4a;
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+        }
+
+        /* --- ROSE ANIMATION --- */
+        .rose-section {
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .love-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--deep-rose);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 1s ease;
+        }
+        .love-msg.visible { opacity: 1; transform: translateY(0); }
+        .rose-anchor { position: relative; width: 100%; height: 60px; display: flex; justify-content: center; }
+        .gathering-rose {
+            position: absolute; font-size: 24px; pointer-events: none;
+            animation: gatherUnder 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes gatherUnder {
+            0% { transform: translate(var(--rx), var(--ry)) scale(0); opacity: 0; }
+            100% { transform: translate(var(--tx), 0) scale(1) rotate(var(--rot)); opacity: 1; }
+        }
+
+        /* --- GIFT SECTION (NEW) --- */
+        .gift-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        .gift-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: floatGift 3s infinite ease-in-out;
+        }
+        .gift-box:nth-child(2) { animation-delay: 0.5s; }
+        .gift-box:nth-child(3) { animation-delay: 1s; }
+        
+        .gift-icon {
+            font-size: 5rem;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+        }
+        .gift-label {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            color: var(--deep-rose);
+            margin-top: 5px;
+        }
+
+        @keyframes floatGift {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* --- BUTTONS --- */
+        .btn-yes {
+            background: var(--accent-pink); color: white; padding: 20px 70px;
+            font-size: 1.6rem; border-radius: 60px; border: none; cursor: pointer;
+            font-weight: 600; box-shadow: 0 15px 30px rgba(251, 111, 146, 0.3); transition: 0.3s;
+        }
+        .btn-yes:hover { transform: scale(1.1); background: var(--deep-rose); }
+        
+        #noBtn { 
+            background: #f0f0f0; color: #999; border: none; padding: 12px 25px; 
+            border-radius: 50px; cursor: pointer; margin-top: 20px; transition: 0.1s;
+        }
+
+        /* --- SUCCESS PAGE --- */
+        #success { display: none; max-width: 800px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 1s ease; }
+        .grateful-letter { font-size: 1.2rem; line-height: 2; color: #444; text-align: left; max-width: 600px; margin: 40px auto; padding: 20px; border-left: 2px solid var(--accent-pink); }
+        .video-container { width: 100%; max-width: 450px; margin: 30px auto; border-radius: 25px; overflow: hidden; aspect-ratio: 9 / 16; background: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+        /* --- PARTICLES --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .particle { position: fixed; pointer-events: none; z-index: 1000; animation: floatUp 4s forwards linear; }
+        @keyframes floatUp { 
+            0% { transform: translate(var(--startX), var(--startY)) rotate(0deg); opacity: 1; } 
+            100% { transform: translate(var(--endX), -20vh) rotate(360deg); opacity: 0; } 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STEP 1: THE ENVELOPE -->
+    <div id="splash">
+        <div class="click-instruction">Click the envelope to open, Karabo...</div>
+        <div class="envelope-wrapper" onclick="openLetter(event)">
+            <div class="envelope-main">
+                <div class="heart-seal"></div>
+            </div>
+        </div>
+        <p style="margin-top: 40px; letter-spacing: 5px; font-weight: 600; color: var(--deep-rose); font-size: 0.9rem;">FOR MY KARABO</p>
+    </div>
+
+    <!-- STEP 2: THE MAIN CONTENT -->
+    <div id="content">
+        <div class="glass-card">
+            <div class="music-hint">Press play for our background music, my love... 🎶</div>
+            <iframe src="https://open.spotify.com/embed/track/4nHZz756JdbAkRqMqT06rM?utm_source=generator" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+            <!-- NEW PUZZLE GAME -->
+            <div id="game-container">
+                <p class="game-title">I have a secret for you... <br> Find the 3 hidden pink hearts to unlock it!</p>
+                <div class="heart-grid">
+                    <div class="game-heart" onclick="selectHeart(this)">🤍</div>
+                    <div class="game-heart" data-target="true" onclick="selectHeart(this)">❤️</div>
+                    <div class="game-heart" onclick="selectHeart(this)">🤍</div>
+                    <div class="game-heart" data-target="true" onclick="selectHeart(this)">💖</div>
+                    <div class="game-heart" onclick="selectHeart(this)">🤍</div>
+                    <div class="game-heart" data-target="true" onclick="selectHeart(this)">💗</div>
+                </div>
+            </div>
+
+            <!-- HIDDEN LETTER CONTENT -->
+            <div id="main-letter">
+                <h1>My Dearest Karabo,</h1>
+
+                <div class="poem-text">
+                    <div class="poem-stanza">
+                        I love you for your kindness.<br>
+                        You give warmth through small acts,<br>
+                        You choose gentle words when the world is loud.<br>
+                        You hold my hand with a care that anchors me,<br>
+                        And you meet my eyes with a beautiful honesty.
+                    </div>
+
+                    <!-- PHOTO GRID -->
+                    <div class="photo-grid">
+                        <div class="polaroid" style="--r: -2deg">
+                            <img src="https://drive.google.com/thumbnail?id=1i-Nbbm6GBH2qFWmvIG0YDYwR-LRVKOo8&sz=w1000">
+                            <div class="polaroid-caption">Your smile isn't just a look, it's a whole mood shifter that makes my worst days feel small. ✨</div>
+                        </div>
+                        
+                        <div class="polaroid" style="--r: 3deg">
+                            <img src="https://drive.google.com/thumbnail?id=1yvKR9kBIvsiViEaHa0n6IlCSjUo4HMog&sz=w1000">
+                            <div class="polaroid-caption">I'm constantly in awe of your heart—the way you care for people is the most beautiful thing about you. ❤️</div>
+                        </div>
+
+                        <div class="polaroid" style="--r: -1deg">
+                            <img src="https://drive.google.com/thumbnail?id=1VW2ybU4R4VYZF5ypcPDwyp-82NAfYyQ9&sz=w1000">
+                            <div class="polaroid-caption">You have this rare way of making everyone around you feel seen and safe just by being yourself. 🌸</div>
+                        </div>
+
+                        <div class="polaroid" style="--r: 2deg">
+                            <img src="https://drive.google.com/thumbnail?id=1iB9f013yr6CrZcpbXBhR7eQ4fOb7EPyS&sz=w1000">
+                            <div class="polaroid-caption">There’s a specific kind of peace I only find when I’m with you; you’re my favorite kind of quiet. 💖</div>
+                        </div>
+                    </div>
+
+                    <div class="poem-stanza">
+                        You give me reasons to keep going when I’m tired.<br>
+                        You wake a quiet hope inside my chest,<br>
+                        A light that turns slow mornings into something bright.
+                    </div>
+
+                    <div class="poem-stanza">
+                        I choose you today, tomorrow, and every day after.<br>
+                        I choose loyalty. I choose patience. I choose us.<br>
+                        I choose to grow beside you, to learn from you,<br>
+                        And to love you more with every passing second.
+                    </div>
+
+                    <div class="poem-stanza" style="font-size: 1.4rem; color: var(--deep-rose); font-family: 'Playfair Display', serif;">
+                        I love you. I stay close.<br>
+                        I care deeply. I choose you.
+                    </div>
+                </div>
+
+                <div style="margin-top: 50px;">
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--deep-rose);">Will you be my Valentine?</h2>
+                    <button class="btn-yes" onclick="showSuccess()">YES! ❤️</button>
+                    <br>
+                    <button id="noBtn" onmouseover="moveNo()" onclick="clickedNo()">No</button>
+                </div>
+            </div> <!-- End main-letter -->
+        </div>
+    </div>
+
+    <!-- STEP 3: SUCCESS PAGE -->
+    <div id="success">
+        <div class="glass-card">
+            <h1>Thank you for choosing me.</h1>
+            
+            <div class="music-hint">Press play for our background music, my love... 🎶</div>
+            <iframe src="https://open.spotify.com/embed/track/723kBcWHaPWeAApqdYguSI?utm_source=generator" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+            <div class="grateful-letter">
+                My heart is so incredibly full right now. Thank you, Karabo, for choosing to walk this life with me. Out of everyone in the world, you chose me, and I promise to never take that for granted.<br><br>
+                <strong>It's me and you, forever against the world.</strong>
+            </div>
+
+            <!-- GIFTS SECTION -->
+            <div class="gift-container">
+                <div class="gift-box">
+                    <div class="gift-icon">🧸</div>
+                    <div class="gift-label">A cuddly bear</div>
+                </div>
+                <div class="gift-box">
+                    <div class="gift-icon">💐</div>
+                    <div class="gift-label">Your flowers</div>
+                </div>
+                <div class="gift-box">
+                    <div class="gift-icon">🍫</div>
+                    <div class="gift-label">Sweet treats</div>
+                </div>
+            </div>
+
+            <div class="video-container">
+                <iframe src="https://drive.google.com/file/d/1VDAld9LuVpE0uIH_5Ra-roDu0YGXfNz1/preview" width="100%" height="100%" allow="autoplay" frameborder="0"></iframe>
+            </div>
+
+            <div class="rose-section">
+                <div class="love-msg" id="loveMsg">I LOVE YOU KARABO</div>
+                <div class="rose-anchor" id="roseAnchor"></div>
+            </div>
+
+            <p style="font-size: 1.8rem; color: var(--deep-rose); font-family: 'Dancing Script';">💖 Always & Forever Your Valentine 💖</p>
+        </div>
+    </div>
+
+    <script>
+        let noClickCount = 0;
+        let heartsFound = 0;
+
+        function spawnParticle(symbol, startFromCenter = false) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.innerHTML = symbol;
+            const startX = startFromCenter ? 50 : Math.random() * 100;
+            const startY = startFromCenter ? 50 : 100;
+            const endX = (Math.random() * 140) - 20; 
+            p.style.setProperty('--startX', startX + 'vw');
+            p.style.setProperty('--startY', startY + 'vh');
+            p.style.setProperty('--endX', endX + 'vw');
+            p.style.left = '0'; p.style.top = '0';
+            p.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            p.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 4000);
+        }
+
+        function openLetter(event) {
+            for(let i=0; i<80; i++) { setTimeout(() => spawnParticle('❤️', true), i * 10); }
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('game-container').style.display = 'block';
+                window.scrollTo(0,0);
+            }, 800);
+        }
+
+        function selectHeart(element) {
+            if (element.getAttribute('data-target') === 'true' && !element.classList.contains('active')) {
+                element.classList.add('active');
+                heartsFound++;
+                spawnParticle('✨', true);
+                if (heartsFound === 3) {
+                    setTimeout(() => {
+                        document.getElementById('game-container').style.display = 'none';
+                        document.getElementById('main-letter').style.display = 'block';
+                        spawnParticle('💖', true);
+                    }, 500);
+                }
+            } else if (!element.classList.contains('active')) {
+                element.style.transform = 'translateX(10px)';
+                setTimeout(() => element.style.transform = 'translateX(0)', 100);
+            }
+        }
+
+        function moveNo() {
+            const btn = document.getElementById('noBtn');
+            btn.style.position = 'fixed';
+            btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            btn.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+        }
+
+        function clickedNo() { 
+            noClickCount++;
+            if (noClickCount === 1) {
+                alert("error try again");
+            } else {
+                alert("ao kgonahale");
+            }
+        }
+
+        function triggerRoseAnimation() {
+            const msg = document.getElementById('loveMsg');
+            const anchor = document.getElementById('roseAnchor');
+            setTimeout(() => msg.classList.add('visible'), 500);
+            for(let i=0; i<40; i++) {
+                const rose = document.createElement('div');
+                rose.className = 'gathering-rose';
+                rose.innerHTML = '🌹';
+                const rx = (Math.random() - 0.5) * 2000 + 'px';
+                const ry = (Math.random() - 0.5) * 2000 + 'px';
+                const tx = (Math.random() - 0.5) * 300 + 'px';
+                const rot = (Math.random() * 360) + 'deg';
+                rose.style.setProperty('--rx', rx);
+                rose.style.setProperty('--ry', ry);
+                rose.style.setProperty('--tx', tx);
+                rose.style.setProperty('--rot', rot);
+                anchor.appendChild(rose);
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+            window.scrollTo(0,0);
+            triggerRoseAnimation();
+            for(let i=0; i<100; i++) {
+                setTimeout(() => {
+                    const icons = ['❤️', '💖', '🌸', '✨'];
+                    spawnParticle(icons[Math.floor(Math.random()*icons.length)], false);
+                }, i * 40);
+            }
+        }
+    </script>
+</body>
+</html>
